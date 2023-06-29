@@ -1,55 +1,15 @@
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.3'
-        classpath 'com.google.gms:google-services:4.3.5'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.32"
-    }
-}
-
-plugins {
-    id 'com.android.application'
-    id 'kotlin-android'
-    id 'kotlin-android-extensions'
-    id 'com.google.gms.google-services'
-}
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.google.gms.google-services'
 
 android {
-
-    packagingOptions {
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/ASL2.0'
-        exclude("META-INF/*.kotlin_module")
-    }
-
     def localProperties = new Properties()
     localProperties.load(new FileInputStream(rootProject.file("local.properties")))
 
     buildFeatures {
         viewBinding true
     }
-
-    signingConfigs {
-        nuova {
-            storeFile file(localProperties['STORELOCATION'])
-            storePassword localProperties['STOREPASSWORD']
-            keyAlias 'key3'
-            keyPassword localProperties['KEYPASSWORD']
-        }
-    }
-
-
-
-
 
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
@@ -63,7 +23,6 @@ android {
         targetSdkVersion 30
         versionCode 7
         versionName "1.4"
-        signingConfig signingConfigs.'nuova'
         setProperty("archivesBaseName","AAAD-" + versionName)
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
