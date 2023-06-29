@@ -21,10 +21,8 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Set up Gradle wrapper
-      run: gradle wrapper
-
     - name: Build with Gradle
       run: |
-        ./gradlew build
+        gradle --no-daemon build
+        gradle --no-daemon assembleDebug
         find . -name '*.apk'
