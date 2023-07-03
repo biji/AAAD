@@ -68,7 +68,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.11'
     implementation 'commons-net:commons-net:3.9.0'
     implementation 'io.github.kaustubhpatange:paypal-checkout:1.4'
-    implementation 'com.github.iGio90:BottomDialogs:master-SNAPSHOT'
+    implementation 'com.github.javiersantos:BottomDialogs:1.2.1'
     implementation 'org.apache.httpcomponents:httpclient:4.5.14'
     api 'org.apache.httpcomponents:httpcore:4.4.16'
     api 'org.apache.httpcomponents:httpmime:4.5.14'
