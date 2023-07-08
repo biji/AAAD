@@ -43,11 +43,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.legs.appsforaa.utils.BottomDialog;
 import com.legs.appsforaa.utils.Version;
 
@@ -106,58 +101,20 @@ public class MainActivity extends AppCompatActivity {
 
         deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance(BuildConfig.FIREBASE_INSTANCE);
-        final DatabaseReference myRef = database.getReference("users");
-        mySecondRef = database.getReference("lastdownload");
-
         final ProgressBar pb = findViewById(R.id.loading_circle);
         final TextView connecting = findViewById(R.id.connecting);
 
         Intent intent = getIntent();
         final Uri iData = intent.getData();
 
-        //BEGIN THE CHECK FOR LICENSE AND LAST DOWNLOAD
-        myRef.child(deviceId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                //USER HAS PRO VERSION
-                remainingDownloads.setText(R.string.congratsPro);
-                pb.setVisibility(View.GONE);
-                connecting.setVisibility(View.GONE);
-                eligible = true;
-                if (iData != null) {
-                    downloadS2A(iData.toString());
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(MainActivity.this, getString(R.string.connection_error), Toast.LENGTH_LONG).show();
-                remainingDownloads.setText(R.string.notConnected);
-                pb.setVisibility(View.GONE);
-
-                shakeButton();
-            }
-        });
-
-        mySecondRef.child(deviceId).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ts = 0;
-                if (snapshot.exists()) {
-                    ts = snapshot.getValue(Long.class);
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                remainingDownloads.setText(R.string.notConnected);
-                pb.setVisibility(View.GONE);
-
-                shakeButton();
-            }
-        });
+        //USER HAS PRO VERSION
+        remainingDownloads.setText(R.string.congratsPro);
+        pb.setVisibility(View.GONE);
+        connecting.setVisibility(View.GONE);
+        eligible = true;
+        if (iData != null) {
+            downloadS2A(iData.toString());
+        }
 
         //BUTTONS
 
