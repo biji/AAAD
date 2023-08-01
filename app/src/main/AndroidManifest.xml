@@ -34,8 +34,7 @@
             android:screenOrientation="portrait"
             android:label="@string/title_activity_about_payment" />
         <activity android:name=".MainActivity"
-            android:screenOrientation="portrait"
-            android:exported="true">
+            android:screenOrientation="portrait">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -11,8 +11,8 @@ android {
         buildConfig = true
     }
 
-    compileSdkVersion 33
-    buildToolsVersion "33.0.2"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
 
     namespace "sksa.aa.customapps"
 
@@ -22,9 +22,9 @@ android {
 
         applicationId "sksa.aa.customapps"
         minSdkVersion 23
-        targetSdkVersion 33
+        targetSdkVersion 30
         versionCode 7
-        versionName "1.4"
+        versionName "1.5"
         setProperty("archivesBaseName","AAAD-" + versionName)
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
