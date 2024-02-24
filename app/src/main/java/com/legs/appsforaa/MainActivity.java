@@ -1,5 +1,7 @@
 package com.legs.appsforaa;
 
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -13,14 +15,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.provider.Settings;
-import android.text.SpannableString;
-import android.text.style.UnderlineSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -28,13 +26,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import androidx.fragment.app.DialogFragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.android.volley.Request;
@@ -44,11 +40,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.legs.appsforaa.utils.BottomDialog;
-import com.legs.appsforaa.utils.Version;
 
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,7 +55,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import sksa.aa.customapps.BuildConfig;
+import sksa.aa.customapps.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -82,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView remainingDownloads;
     long currentTime;
     private long ts;
-    private DatabaseReference mySecondRef;
+//    private DatabaseReference mySecondRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        requestLatest();
+        //requestLatest();
 
         remainingDownloads = findViewById(R.id.remaining_downloads);
         verified = new Boolean[1];
@@ -115,23 +110,21 @@ public class MainActivity extends AppCompatActivity {
         if (iData != null) {
             downloadS2A(iData.toString());
         }
-
         //BUTTONS
-
-
         Button carStreamButton = findViewById(R.id.download_carstream);
         carStreamButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    if (ContextCompat.checkSelfPermission(MainActivity.this,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                if (ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                         PackageManager.PERMISSION_GRANTED) {
-                        askForStoragePermission();
-                    } else {
-                        downloadCarStream();
-                    }
+                    askForStoragePermission();
+                } else {
+                    downloadCarStream();
+                }
             }
         });
+
         setLongClickListener(carStreamButton, R.string.carstream_description);
 
         Button fermataAutoButton = findViewById(R.id.download_fermata);
@@ -141,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (ContextCompat.checkSelfPermission(MainActivity.this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                    PackageManager.PERMISSION_GRANTED) {
+                        PackageManager.PERMISSION_GRANTED) {
                     askForStoragePermission();
                 } else {
 
@@ -207,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (ContextCompat.checkSelfPermission(MainActivity.this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                    PackageManager.PERMISSION_GRANTED) {
+                        PackageManager.PERMISSION_GRANTED) {
                     askForStoragePermission();
                 } else {
                     downloadAAMirrorPlus();
@@ -218,198 +211,201 @@ public class MainActivity extends AppCompatActivity {
         Button performanceMonitor = findViewById(R.id.download_performance_monitor);
         setLongClickListener(performanceMonitor, R.string.performance_monitor_description);
         performanceMonitor.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            @Override
+            public void onClick(View v) {
 
-                        if (ContextCompat.checkSelfPermission(MainActivity.this,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                            PackageManager.PERMISSION_GRANTED) {
-                            askForStoragePermission();
-                        } else {
-
-
-                            String baseUrl = "https://api.github.com/repos/jilleb/mqb-pm/releases/latest";
-
-                            RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-                            final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                if (ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED) {
+                    askForStoragePermission();
+                } else {
 
 
-                            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, baseUrl, null, new Response.Listener < JSONObject > () {
-                                @Override
-                                public void onResponse(JSONObject response) {
-                                    try {
+                    String baseUrl = "https://api.github.com/repos/jilleb/mqb-pm/releases/latest";
 
-                                        alertDialog.setMessage(getString(R.string.fermata_control_dialog, "Performance Monitor", response.getString("tag_name"), "Extensions For Vag"));
+                    RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+                    final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
 
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    } finally {
 
-                                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                downloadPM(true);
-                                                alertDialog.dismiss();
-                                            }
-                                        });
+                    final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, baseUrl, null, new Response.Listener < JSONObject > () {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
 
-                                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.no), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                downloadPM(false);
-                                                alertDialog.dismiss();
-                                            }
-                                        });
+                                alertDialog.setMessage(getString(R.string.fermata_control_dialog, "Performance Monitor", response.getString("tag_name"), "Extensions For Vag"));
 
-                                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                alertDialog.dismiss();
-                                            }
-                                        });
-                                        alertDialog.show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            } finally {
+
+                                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        downloadPM(true);
+                                        alertDialog.dismiss();
                                     }
+                                });
 
-                                }
-                            }, new Response.ErrorListener() {
-
-
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-
-                                }
-                            });
-
-
-                            queue.add(jsonObjectRequest);
-                        }
-                });
-
-            Button aaPassenger = findViewById(R.id.download_aa_passenger); setLongClickListener(aaPassenger, R.string.aapassenger_description); aaPassenger.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (ContextCompat.checkSelfPermission(MainActivity.this,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                        PackageManager.PERMISSION_GRANTED) {
-                        askForStoragePermission();
-                    }
-                }
-            });
-
-            Button s2a = findViewById(R.id.download_screentwoauto); setLongClickListener(s2a, R.string.s2a_description); s2a.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (ContextCompat.checkSelfPermission(MainActivity.this,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                        PackageManager.PERMISSION_GRANTED) {
-                        askForStoragePermission();
-                    }
-                }
-            });
-
-            Button aamirrorButton = findViewById(R.id.download_aamirror); setLongClickListener(aamirrorButton, R.string.aamirror_description); aamirrorButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (ContextCompat.checkSelfPermission(MainActivity.this,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                        PackageManager.PERMISSION_GRANTED) {
-                        askForStoragePermission();
-                    }
-                }
-            });
-
-            Button aawidgets = findViewById(R.id.download_aa_widgets); setLongClickListener(aawidgets, R.string.aawidgets_description); aawidgets.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                        if (ContextCompat.checkSelfPermission(MainActivity.this,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                            PackageManager.PERMISSION_GRANTED) {
-                            askForStoragePermission();
-                        } else {
-                            downloadAAWidgets();
-                        }
-
-                    }
-            });
-
-            Button aaStreamButton = findViewById(R.id.download_aa_stream); setLongClickListener(aaStreamButton, R.string.aa_stream_description); aaStreamButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                        if (ContextCompat.checkSelfPermission(MainActivity.this,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                            PackageManager.PERMISSION_GRANTED) {
-                            askForStoragePermission();
-                        } else {
-                            downloadAAStream();
-                        }
-
-                }
-            });
-
-            Button nav2contacts = findViewById(R.id.download_nav2contacts); setLongClickListener(nav2contacts, R.string.nav2contacts_description); nav2contacts.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                        if (Build.VERSION.SDK_INT < 26) {
-                            notMeetingSDK(8);
-                        } else {
-                            String baseUrl = "https://api.github.com/repos/frankkienl/Nav2Contacts/releases/latest";
-
-                            RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-                            final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-
-
-                            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, baseUrl, null, new Response.Listener < JSONObject > () {
-                                @Override
-                                public void onResponse(JSONObject response) {
-                                    try {
-
-                                        alertDialog.setMessage(getString(R.string.about_to_download, "Nav2Contacts " + response.getString("tag_name")));
-
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    } finally {
-
-                                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                downloadN2C();
-                                                alertDialog.dismiss();
-                                            }
-                                        });
-
-                                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                alertDialog.dismiss();
-                                            }
-                                        });
-                                        alertDialog.show();
+                                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.no), new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        downloadPM(false);
+                                        alertDialog.dismiss();
                                     }
+                                });
 
-                                }
-                            }, new Response.ErrorListener() {
+                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        alertDialog.dismiss();
+                                    }
+                                });
+                                alertDialog.show();
+                            }
 
-
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-
-                                }
-                            });
-
-
-                            queue.add(jsonObjectRequest);
                         }
+                    }, new Response.ErrorListener() {
 
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+                    });
+
+
+                    queue.add(jsonObjectRequest);
                 }
-            });
+            }});
 
-            //HEADERS
+        Button aaPassenger = findViewById(R.id.download_aa_passenger); setLongClickListener(aaPassenger, R.string.aapassenger_description); aaPassenger.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED) {
+                    askForStoragePermission();
+                }
+            }
+        });
 
-            RelativeLayout firstHeader = findViewById(R.id.first_header); TextView firstHeaderTextView = firstHeader.findViewById(R.id.header_text); firstHeaderTextView.setText(R.string.first_section_name);
+        Button s2a = findViewById(R.id.download_screentwoauto); setLongClickListener(s2a, R.string.s2a_description); s2a.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED) {
+                    askForStoragePermission();
+                }
+            }
+        });
 
-            RelativeLayout secondHeader = findViewById(R.id.second_header); TextView secondHeaderTextView = secondHeader.findViewById(R.id.header_text); secondHeaderTextView.setText(R.string.second_section_name);
+        Button aamirrorButton = findViewById(R.id.download_aamirror); setLongClickListener(aamirrorButton, R.string.aamirror_description); aamirrorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED) {
+                    askForStoragePermission();
+                }
+                else {
+                    downloadAAMirror();
+                }
+            }
+        });
+
+        Button aawidgets = findViewById(R.id.download_aa_widgets); setLongClickListener(aawidgets, R.string.aawidgets_description); aawidgets.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED) {
+                    askForStoragePermission();
+                } else {
+                    downloadAAWidgets();
+                }
+
+            }
+        });
+
+        Button aaStreamButton = findViewById(R.id.download_aa_stream); setLongClickListener(aaStreamButton, R.string.aa_stream_description); aaStreamButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED) {
+                    askForStoragePermission();
+                } else {
+                    downloadAAStream();
+                }
+
+            }
+        });
+
+        Button nav2contacts = findViewById(R.id.download_nav2contacts); setLongClickListener(nav2contacts, R.string.nav2contacts_description); nav2contacts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT < 26) {
+                    notMeetingSDK(8);
+                } else {
+                    String baseUrl = "https://api.github.com/repos/frankkienl/Nav2Contacts/releases/latest";
+
+                    RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+                    final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
 
 
-            RelativeLayout thirdHeader = findViewById(R.id.third_header); TextView thirdHeaderTextView = thirdHeader.findViewById(R.id.header_text); thirdHeaderTextView.setText(R.string.third_section_name);
+                    final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, baseUrl, null, new Response.Listener < JSONObject > () {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+
+                                alertDialog.setMessage(getString(R.string.about_to_download, "Nav2Contacts " + response.getString("tag_name")));
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            } finally {
+
+                                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        downloadN2C();
+                                        alertDialog.dismiss();
+                                    }
+                                });
+
+                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        alertDialog.dismiss();
+                                    }
+                                });
+                                alertDialog.show();
+                            }
+
+                        }
+                    }, new Response.ErrorListener() {
 
 
-            if (!SUPPORTED_ABIS.contains("arm64-v8a") && !SUPPORTED_ABIS.contains("armeabi-v7a") && sharedPreferences.getBoolean("ignored_abi", false)) {
-                final BottomDialog builder2 = new BottomDialog.Builder(MainActivity.this)
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+                    });
+
+
+                    queue.add(jsonObjectRequest);
+                }
+
+            }
+        });
+
+        //HEADERS
+
+        RelativeLayout firstHeader = findViewById(R.id.first_header); TextView firstHeaderTextView = firstHeader.findViewById(R.id.header_text); firstHeaderTextView.setText(R.string.first_section_name);
+
+        RelativeLayout secondHeader = findViewById(R.id.second_header); TextView secondHeaderTextView = secondHeader.findViewById(R.id.header_text); secondHeaderTextView.setText(R.string.second_section_name);
+
+
+        RelativeLayout thirdHeader = findViewById(R.id.third_header); TextView thirdHeaderTextView = thirdHeader.findViewById(R.id.header_text); thirdHeaderTextView.setText(R.string.third_section_name);
+
+
+        if (!SUPPORTED_ABIS.contains("arm64-v8a") && !SUPPORTED_ABIS.contains("armeabi-v7a") && sharedPreferences.getBoolean("ignored_abi", false)) {
+            final BottomDialog builder2 = new BottomDialog.Builder(MainActivity.this)
                     .setTitle(R.string.attention)
                     .setContent(getString(R.string.cpu_architecture_warning))
                     .setPositiveBackgroundColor(R.color.colorPrimary)
@@ -431,10 +427,10 @@ public class MainActivity extends AppCompatActivity {
                     })
                     .setBackgroundColor(R.color.centercolor).build();
 
-                builder2.show();
-            } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            builder2.show();
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
 
-                final BottomDialog builder2 = new BottomDialog.Builder(MainActivity.this)
+            final BottomDialog builder2 = new BottomDialog.Builder(MainActivity.this)
                     .setTitle(R.string.attention)
                     .setContent(getString(R.string.unknown_sources_warning))
                     .setPositiveBackgroundColor(R.color.colorPrimary)
@@ -455,11 +451,11 @@ public class MainActivity extends AppCompatActivity {
                     })
                     .setBackgroundColor(R.color.centercolor).build();
 
-                builder2.show();
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                if (!getPackageManager().canRequestPackageInstalls()) {
+            builder2.show();
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (!getPackageManager().canRequestPackageInstalls()) {
 
-                    final BottomDialog builder2 = new BottomDialog.Builder(MainActivity.this)
+                final BottomDialog builder2 = new BottomDialog.Builder(MainActivity.this)
                         .setTitle(R.string.attention)
                         .setContent(getString(R.string.unknown_sources_warning))
                         .setPositiveBackgroundColor(R.color.colorPrimary)
@@ -479,434 +475,489 @@ public class MainActivity extends AppCompatActivity {
                         })
                         .setBackgroundColor(R.color.centercolor).build();
 
-                    builder2.show();
-                }
+                builder2.show();
             }
-
-
         }
 
-        private void askForStoragePermission() {
-            ActivityCompat.requestPermissions(MainActivity.this,
+
+    }
+
+    private void askForStoragePermission() {
+        ActivityCompat.requestPermissions(MainActivity.this,
                 new String[] {
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
                 },
                 101);
 
-        }
+    }
 
-        @Override
-        protected void onDestroy() {
-            super.onDestroy();
-            File dir = new File(getApplicationContext().getExternalFilesDir("AAAD") + "/");
-            if (dir.isDirectory()) {
-                String[] children = dir.list();
-                for (String child: children) {
-                    new File(dir, child).delete();
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        File dir = new File(getApplicationContext().getExternalFilesDir("AAAD") + "/");
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            for (String child: children) {
+                new File(dir, child).delete();
+            }
+        }
+        finish();
+
+    }
+
+
+ /*   public void mReadDataOnce(String child, final OnGetDataListener listener) {
+        listener.onStart();
+        FirebaseDatabase.getInstance(BuildConfig.FIREBASE_INSTANCE).getReference().child(child).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
+                listener.onSuccess(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(@NotNull DatabaseError databaseError) {
+                listener.onFailed(databaseError);
+            }
+        });
+    }*/
+
+    private void getTime() throws IOException {
+
+        runOnUiThread(new Thread() {
+            @Override
+            public void run() {
+                try {
+
+                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                    StrictMode.setThreadPolicy(policy);
+                    NTPUDPClient timeClient = new NTPUDPClient();
+                    InetAddress inetAddress = InetAddress.getByName(TIME_SERVER);
+                    TimeInfo timeInfo = timeClient.getTime(inetAddress);
+                    currentTime = timeInfo.getMessage().getReceiveTimeStamp().getTime();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
-            finish();
+        });
 
-        }
-
-
-        public void mReadDataOnce(String child, final OnGetDataListener listener) {
-            listener.onStart();
-            FirebaseDatabase.getInstance(BuildConfig.FIREBASE_INSTANCE).getReference().child(child).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NotNull DataSnapshot dataSnapshot) {
-                    listener.onSuccess(dataSnapshot);
-                }
-
-                @Override
-                public void onCancelled(@NotNull DatabaseError databaseError) {
-                    listener.onFailed(databaseError);
-                }
-            });
-        }
-
-        private void getTime() throws IOException {
-
-            runOnUiThread(new Thread() {
-                @Override
-                public void run() {
-                    try {
-
-                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                        StrictMode.setThreadPolicy(policy);
-                        NTPUDPClient timeClient = new NTPUDPClient();
-                        InetAddress inetAddress = InetAddress.getByName(TIME_SERVER);
-                        TimeInfo timeInfo = timeClient.getTime(inetAddress);
-                        currentTime = timeInfo.getMessage().getReceiveTimeStamp().getTime();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-        }
+    }
 
 
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.infos:
-                    {
-                        DialogFragment aboutDialog = new AboutDialog();
-                        Bundle b = new Bundle();
-                        b.putString("did", deviceId);
-                        aboutDialog.setArguments(b);
-                        aboutDialog.show(getSupportFragmentManager(), "AboutDialog");
-                        break;
-                    }
-                case R.id.help:
-                    {
-                        DialogFragment contactDialog = new ContactDialog();
-                        contactDialog.show(getSupportFragmentManager(), "ContactDialog");
-                        break;
-                    }
-                default:
-                    break;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        /*switch (item.getItemId()) {
+            case R.id.infos:
+            {
+                DialogFragment aboutDialog = new AboutDialog();
+                Bundle b = new Bundle();
+                b.putString("did", deviceId);
+                aboutDialog.setArguments(b);
+                aboutDialog.show(getSupportFragmentManager(), "AboutDialog");
+                break;
             }
-            return true;
-        }
+            case R.id.help:
+            {
+                DialogFragment contactDialog = new ContactDialog();
+                contactDialog.show(getSupportFragmentManager(), "ContactDialog");
+                break;
+            }
+            default:
+                break;
+        }*/
+        return true;
+    }
 
-        @Override
-        public boolean onCreateOptionsMenu(Menu menu) {
-            getMenuInflater().inflate(R.menu.menu, menu);
-            return true;
-        }
-
-
-
-        public interface OnGetDataListener {
-            void onStart();
-            void onSuccess(DataSnapshot data);
-            void onFailed(DatabaseError databaseError);
-        }
-
-
-        public void downloadFermata(final boolean control) {
-
-            final ArrayList < String > downloadURLS = new ArrayList < String > ();
-
-            String baseUrl = "https://api.github.com/repos/AndreyPavlenko/Fermata/releases/latest";
-
-            RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
 
 
-            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, baseUrl, null, new Response.Listener < JSONObject > () {
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
 
-                        JSONArray allAssets = response.getJSONArray("assets");
+/*    public interface OnGetDataListener {
+        void onStart();
+        void onSuccess(DataSnapshot data);
+        void onFailed(DatabaseError databaseError);
+    }*/
 
-                        for (int i = 0; i < allAssets.length(); i++) {
 
-                            JSONObject thisObj = (JSONObject) allAssets.get(i);
-                            if (thisObj.getString("name").contains("arm64") && SUPPORTED_ABIS.contains("arm64-v8a")) {
-                                downloadURLS.add(thisObj.getString("browser_download_url"));
-                            }
-                            if (thisObj.getString("name").contains("arm.apk") && !SUPPORTED_ABIS.contains("arm64-v8a") && SUPPORTED_ABIS.contains("armeabi-v7a")) {
-                                downloadURLS.add(thisObj.getString("browser_download_url"));
-                            }
-                            if (control && thisObj.getString("name").contains("control")) {
-                                downloadURLS.add(thisObj.getString("browser_download_url"));
-                            }
+    public void downloadFermata(final boolean control) {
+
+        final ArrayList < String > downloadURLS = new ArrayList < String > ();
+
+        String baseUrl = "https://api.github.com/repos/AndreyPavlenko/Fermata/releases/latest";
+
+        RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
+
+
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, baseUrl, null, new Response.Listener < JSONObject > () {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+
+                    JSONArray allAssets = response.getJSONArray("assets");
+
+                    for (int i = 0; i < allAssets.length(); i++) {
+
+                        JSONObject thisObj = (JSONObject) allAssets.get(i);
+                        if (thisObj.getString("name").contains("arm64") && SUPPORTED_ABIS.contains("arm64-v8a")) {
+                            downloadURLS.add(thisObj.getString("browser_download_url"));
                         }
+                        if (thisObj.getString("name").contains("arm.apk") && !SUPPORTED_ABIS.contains("arm64-v8a") && SUPPORTED_ABIS.contains("armeabi-v7a")) {
+                            downloadURLS.add(thisObj.getString("browser_download_url"));
+                        }
+                        if (control && thisObj.getString("name").contains("control")) {
+                            downloadURLS.add(thisObj.getString("browser_download_url"));
+                        }
+                    }
 
 
 
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } finally {
-                        pDialog = ProgressDialog.show(MainActivity.this, "",
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    pDialog = ProgressDialog.show(MainActivity.this, "",
                             getString(R.string.loading), true);
-                        pDialog.show();
+                    pDialog.show();
 
-                        if (downloadURLS.isEmpty()) {
-                            dismissProgressDialog(pDialog);
-                            final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                            alertDialog.setMessage(getString(R.string.might_not_be_compatible));
+                    if (downloadURLS.isEmpty()) {
+                        dismissProgressDialog(pDialog);
+                        final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                        alertDialog.setMessage(getString(R.string.might_not_be_compatible));
 
-                            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    alertDialog.dismiss();
-                                }
-                            });
-                            alertDialog.show();
-                        }
-
-                        for (int i = 0; i < Objects.requireNonNull(downloadURLS).size(); i++) {
-                            final File file;
-
-
-                            file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "fermata" + i + ".apk");
-
-
-
-                            final int finalI = i;
-                            new Handler().postDelayed(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    GitHubDownloader downloader = new GitHubDownloader(MainActivity.this, file, downloadURLS.get(finalI));
-                                    downloader.run();
-                                    pDialog.dismiss();
-                                }
-                            }, 3000);
-
-                        }
+                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                alertDialog.dismiss();
+                            }
+                        });
+                        alertDialog.show();
                     }
 
+                    for (int i = 0; i < Objects.requireNonNull(downloadURLS).size(); i++) {
+                        final File file;
+
+
+                        file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "fermata" + i + ".apk");
+
+
+
+                        final int finalI = i;
+                        new Handler().postDelayed(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                GitHubDownloader downloader = new GitHubDownloader(MainActivity.this, file, downloadURLS.get(finalI));
+                                downloader.run();
+                                pDialog.dismiss();
+                            }
+                        }, 3000);
+
+                    }
                 }
-            }, new Response.ErrorListener() {
+
+            }
+        }, new Response.ErrorListener() {
 
 
-                @Override
-                public void onErrorResponse(VolleyError error) {
+            @Override
+            public void onErrorResponse(VolleyError error) {
 
-                }
-            });
-            queue.add(jsonObjectRequest);
-        }
+            }
+        });
+        queue.add(jsonObjectRequest);
+    }
 
-        public void downloadCarStream() {
+    public void downloadCarStream() {
 
 
-            final String[] url = new String[1];
-            url[0] = "";
+        final String[] url = new String[1];
+        url[0] = "";
 
-            AlertDialog.Builder adb = new AlertDialog.Builder(this);
-            CharSequence[] items = new CharSequence[] {
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        CharSequence[] items = new CharSequence[] {
                 "CarStream 2.0.5 by Paesani2006",
                 "CarStream 2.0.4 by Kristakos",
                 "CarStream 2.0.2 by Eselter"
-            };
-            adb.setSingleChoiceItems(items, 4, new DialogInterface.OnClickListener() {
+        };
+        adb.setSingleChoiceItems(items, 4, new DialogInterface.OnClickListener() {
 
-                @Override
-                public void onClick(DialogInterface d, int n) {
-                    switch (n) {
-                        case 0:
-                            url[0] = BuildConfig.CARSTREAM205_LINK;
-                            break;
-                        case 1:
-                            url[0] = BuildConfig.CARSTREAM204_LINK;
-                            break;
-                        case 2:
-                            url[0] = BuildConfig.CARSTREAM202_LINK;
-                            break;
-                        default:
-                            throw new IllegalStateException("Unexpected value: " + n);
+            @Override
+            public void onClick(DialogInterface d, int n) {
+                switch (n) {
+                    case 0:
+                        url[0] = BuildConfig.CARSTREAM205_LINK;
+                        break;
+                    case 1:
+                        url[0] = BuildConfig.CARSTREAM204_LINK;
+                        break;
+                    case 2:
+                        url[0] = BuildConfig.CARSTREAM202_LINK;
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + n);
+                }
+            }
+
+        });
+        adb.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "carstream" + ".apk");
+
+
+                pDialog = ProgressDialog.show(MainActivity.this, "",
+                        getString(R.string.loading), true);
+                pDialog.show();
+
+                final File finalFile = file;
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Downloader downlaoder = new Downloader(MainActivity.this, finalFile, url[0]);
+                        downlaoder.run();
+                        pDialog.dismiss();
+                    }
+                }, 3000);
+            }
+        });
+        adb.setNegativeButton(getString(android.R.string.cancel), null);
+        adb.setTitle(R.string.select_which);
+        adb.show();
+
+
+    }
+
+    public void downloadAAMirrorPlus() {
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        alertDialog.setMessage(getString(R.string.about_to_download, "AAMirror Plus v. 1.01a"));
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+
+                alertDialog.dismiss();
+
+
+                final String url = BuildConfig.AAMP_LINK;
+                final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "aamp" + ".apk");
+                pDialog = ProgressDialog.show(MainActivity.this, "",
+                        getString(R.string.loading), true);
+                pDialog.show();
+
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Downloader downlaoder = new Downloader(MainActivity.this, file, url);
+                        downlaoder.run();
+                        pDialog.dismiss();
+                    }
+                }, 3000);
+
+
+            }
+        });
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.no), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog.show();
+
+
+    }
+
+    public void downloadAAMirror() {
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        alertDialog.setMessage(getString(R.string.about_to_download, "AAMirror 1.0"));
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                alertDialog.dismiss();
+
+                final String url = BuildConfig.AAMIRROR_LINK;
+                final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "aamirror" + ".apk");
+
+                pDialog = ProgressDialog.show(MainActivity.this, "",
+                        getString(R.string.loading), true);
+                pDialog.show();
+
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Downloader downlaoder = new Downloader(MainActivity.this, file, url);
+                        downlaoder.run();
+                        pDialog.dismiss();
+                    }
+                }, 3000);
+
+            }
+        });
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.no), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog.show();
+
+    }
+
+    public void downloadAAWidgets() {
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        alertDialog.setMessage(getString(R.string.about_to_download, "Widgets For AA 0.2.0"));
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                alertDialog.dismiss();
+
+                final String url = BuildConfig.AAWIDGETS_LINK;
+
+                final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "aawidgets" + ".apk");
+
+
+                pDialog = ProgressDialog.show(MainActivity.this, "",
+                        getString(R.string.loading), true);
+                pDialog.show();
+
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Downloader downlaoder = new Downloader(MainActivity.this, file, url);
+                        downlaoder.run();
+                        pDialog.dismiss();
+                    }
+                }, 3000);
+
+            }
+        });
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.no), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog.show();
+
+
+
+
+    }
+
+    public void downloadAAStream() {
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        alertDialog.setMessage(getString(R.string.about_to_download, "AAStream 1.1.0.29"));
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                alertDialog.dismiss();
+                final String url = BuildConfig.AASTREAM_LINK;
+                final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "aastream" + ".apk");
+                pDialog = ProgressDialog.show(MainActivity.this, "",
+                        getString(R.string.loading), true);
+                pDialog.show();
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Downloader downlaoder = new Downloader(MainActivity.this, file, url);
+                        downlaoder.run();
+                        pDialog.dismiss();
+                    }
+                }, 3000);
+            }
+        });
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.no), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog.show();
+
+
+    }
+
+    public void downloadPM(final boolean extension) {
+
+        final ArrayList < String > downloadURLS = new ArrayList < > ();
+
+        String baseUrl = "https://api.github.com/repos/jilleb/mqb-pm/releases/latest";
+        String baseUrl2 = "https://api.github.com/repos/martoreto/aauto-vex-vag/releases/latest";
+
+
+        RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
+
+
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, baseUrl, null, new Response.Listener < JSONObject > () {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+
+                    JSONArray allAssets = response.getJSONArray("assets");
+
+                    for (int i = 0; i < allAssets.length(); i++) {
+
+                        JSONObject thisObj = (JSONObject) allAssets.get(i);
+                        if (thisObj.getString("name").contains("apk")) {
+                            downloadURLS.add(thisObj.getString("browser_download_url"));
+                        }
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    pDialog = ProgressDialog.show(MainActivity.this, "",
+                            getString(R.string.loading), true);
+                    pDialog.show();
+
+
+                    for (int i = 0; i < Objects.requireNonNull(downloadURLS).size(); i++) {
+
+                        final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "pm" + i + ".apk");
+
+
+
+                        final int finalI = i;
+                        new Handler().postDelayed(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                GitHubDownloader downlaoder = new GitHubDownloader(MainActivity.this, file, downloadURLS.get(finalI));
+                                downlaoder.run();
+                                pDialog.dismiss();
+                            }
+                        }, 3000);
+
                     }
                 }
 
-            });
-            adb.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "carstream" + ".apk");
+            }
+        }, new Response.ErrorListener() {
 
+            @Override
+            public void onErrorResponse(VolleyError error) {
 
-                    pDialog = ProgressDialog.show(MainActivity.this, "",
-                        getString(R.string.loading), true);
-                    pDialog.show();
+            }
+        });
 
-                    final File finalFile = file;
-                    new Handler().postDelayed(new Runnable() {
+        if (extension) {
 
-                        @Override
-                        public void run() {
-                            Downloader downlaoder = new Downloader(MainActivity.this, finalFile, url[0]);
-                            downlaoder.run();
-                            pDialog.dismiss();
-                        }
-                    }, 3000);
-                }
-            });
-            adb.setNegativeButton(getString(android.R.string.cancel), null);
-            adb.setTitle(R.string.select_which);
-            adb.show();
-
-
-        }
-
-        public void downloadAAMirrorPlus() {
-
-            final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-            alertDialog.setMessage(getString(R.string.about_to_download, "AAMirror Plus v. 1.01a"));
-
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-
-
-                    alertDialog.dismiss();
-
-
-                    final String url = BuildConfig.AAMP_LINK;
-                    final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "aamp" + ".apk");
-                    pDialog = ProgressDialog.show(MainActivity.this, "",
-                        getString(R.string.loading), true);
-                    pDialog.show();
-
-                    new Handler().postDelayed(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            Downloader downlaoder = new Downloader(MainActivity.this, file, url);
-                            downlaoder.run();
-                            pDialog.dismiss();
-                        }
-                    }, 3000);
-
-
-                }
-            });
-
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.no), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    alertDialog.dismiss();
-                }
-            });
-            alertDialog.show();
-
-
-        }
-
-        public void downloadAAMirror() {
-
-            final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-            alertDialog.setMessage(getString(R.string.about_to_download, "AAMirror 1.0"));
-
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-
-                    alertDialog.dismiss();
-
-                    final String url = BuildConfig.AAMIRROR_LINK;
-                    final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "aamirror" + ".apk");
-
-                    pDialog = ProgressDialog.show(MainActivity.this, "",
-                        getString(R.string.loading), true);
-                    pDialog.show();
-
-                    new Handler().postDelayed(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            Downloader downlaoder = new Downloader(MainActivity.this, file, url);
-                            downlaoder.run();
-                            pDialog.dismiss();
-                        }
-                    }, 3000);
-
-                }
-            });
-
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.no), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    alertDialog.dismiss();
-                }
-            });
-            alertDialog.show();
-
-        }
-
-        public void downloadAAWidgets() {
-
-            final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-            alertDialog.setMessage(getString(R.string.about_to_download, "Widgets For AA 0.2.0"));
-
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-
-                    alertDialog.dismiss();
-
-                    final String url = BuildConfig.AAWIDGETS_LINK;
-
-                    final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "aawidgets" + ".apk");
-
-
-                    pDialog = ProgressDialog.show(MainActivity.this, "",
-                        getString(R.string.loading), true);
-                    pDialog.show();
-
-                    new Handler().postDelayed(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            Downloader downlaoder = new Downloader(MainActivity.this, file, url);
-                            downlaoder.run();
-                            pDialog.dismiss();
-                        }
-                    }, 3000);
-
-                }
-            });
-
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.no), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    alertDialog.dismiss();
-                }
-            });
-            alertDialog.show();
-
-
-
-
-        }
-
-        public void downloadAAStream() {
-
-            final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-            alertDialog.setMessage(getString(R.string.about_to_download, "AAStream 1.1.0.29"));
-
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-
-                    alertDialog.dismiss();
-                    final String url = BuildConfig.AASTREAM_LINK;
-                    final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "aastream" + ".apk");
-                    pDialog = ProgressDialog.show(MainActivity.this, "",
-                        getString(R.string.loading), true);
-                    pDialog.show();
-                    new Handler().postDelayed(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            Downloader downlaoder = new Downloader(MainActivity.this, file, url);
-                            downlaoder.run();
-                            pDialog.dismiss();
-                        }
-                    }, 3000);
-                }
-            });
-
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.no), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    alertDialog.dismiss();
-                }
-            });
-            alertDialog.show();
-
-
-        }
-
-        public void downloadPM(final boolean extension) {
-
-            final ArrayList < String > downloadURLS = new ArrayList < > ();
-
-            String baseUrl = "https://api.github.com/repos/jilleb/mqb-pm/releases/latest";
-            String baseUrl2 = "https://api.github.com/repos/martoreto/aauto-vex-vag/releases/latest";
-
-
-            RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
-
-
-            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, baseUrl, null, new Response.Listener < JSONObject > () {
+            final JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(Request.Method.GET, baseUrl2, null, new Response.Listener < JSONObject > () {
                 @Override
                 public void onResponse(JSONObject response) {
                     try {
@@ -925,13 +976,9 @@ public class MainActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     } finally {
-                        pDialog = ProgressDialog.show(MainActivity.this, "",
-                            getString(R.string.loading), true);
-                        pDialog.show();
 
 
                         for (int i = 0; i < Objects.requireNonNull(downloadURLS).size(); i++) {
-
                             final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "pm" + i + ".apk");
 
 
@@ -943,7 +990,6 @@ public class MainActivity extends AppCompatActivity {
                                 public void run() {
                                     GitHubDownloader downlaoder = new GitHubDownloader(MainActivity.this, file, downloadURLS.get(finalI));
                                     downlaoder.run();
-                                    pDialog.dismiss();
                                 }
                             }, 3000);
 
@@ -959,335 +1005,285 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            if (extension) {
+            queue.add(jsonObjectRequest2);
 
-                final JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(Request.Method.GET, baseUrl2, null, new Response.Listener < JSONObject > () {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-
-                            JSONArray allAssets = response.getJSONArray("assets");
-
-                            for (int i = 0; i < allAssets.length(); i++) {
-
-                                JSONObject thisObj = (JSONObject) allAssets.get(i);
-                                if (thisObj.getString("name").contains("apk")) {
-                                    downloadURLS.add(thisObj.getString("browser_download_url"));
-                                }
-                            }
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        } finally {
-
-
-                            for (int i = 0; i < Objects.requireNonNull(downloadURLS).size(); i++) {
-                                final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "pm" + i + ".apk");
-
-
-
-                                final int finalI = i;
-                                new Handler().postDelayed(new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        GitHubDownloader downlaoder = new GitHubDownloader(MainActivity.this, file, downloadURLS.get(finalI));
-                                        downlaoder.run();
-                                    }
-                                }, 3000);
-
-                            }
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                });
-
-                queue.add(jsonObjectRequest2);
-
-            }
-
-            queue.add(jsonObjectRequest);
         }
 
-        public void downloadN2C() {
+        queue.add(jsonObjectRequest);
+    }
 
-            final String[] downloadURL1 = {
+    public void downloadN2C() {
+
+        final String[] downloadURL1 = {
                 ""
-            };
+        };
 
-            String baseUrl1 = "https://api.github.com/repos/frankkienl/Nav2Contacts/releases/latest";
+        String baseUrl1 = "https://api.github.com/repos/frankkienl/Nav2Contacts/releases/latest";
 
-            RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
+        RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
 
 
-            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, baseUrl1, null, new Response.Listener < JSONObject > () {
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, baseUrl1, null, new Response.Listener < JSONObject > () {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
 
-                        JSONArray allAssets = response.getJSONArray("assets");
+                    JSONArray allAssets = response.getJSONArray("assets");
 
-                        for (int i = 0; i < allAssets.length(); i++) {
+                    for (int i = 0; i < allAssets.length(); i++) {
 
-                            JSONObject thisObj = (JSONObject) allAssets.get(i);
-                            if (thisObj.getString("name").contains("apk")) {
-                                downloadURL1[0] = thisObj.getString("browser_download_url");
-                            }
+                        JSONObject thisObj = (JSONObject) allAssets.get(i);
+                        if (thisObj.getString("name").contains("apk")) {
+                            downloadURL1[0] = thisObj.getString("browser_download_url");
                         }
-
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } finally {
-                        pDialog = ProgressDialog.show(MainActivity.this, "",
-                            getString(R.string.loading), true);
-                        pDialog.show();
-
-                        final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "n2c" + ".apk");
-
-                        new Handler().postDelayed(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                GitHubDownloader downlaoder = new GitHubDownloader(MainActivity.this, file, downloadURL1[0]);
-                                downlaoder.run();
-                                pDialog.dismiss();
-                            }
-                        }, 3000);
                     }
 
-                }
-            }, new Response.ErrorListener() {
 
-
-                @Override
-                public void onErrorResponse(VolleyError error) {
-
-                }
-            });
-
-
-            queue.add(jsonObjectRequest);
-
-
-        }
-
-        public void downloadAAP() {
-
-
-            final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-            alertDialog.setMessage(getString(R.string.about_to_download, "AAPassenger v1.9-alpha8"));
-
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-
-
-                    alertDialog.dismiss();
-
-                    final String url = BuildConfig.AAPASSENGER_LINK;
-                    final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "aap" + ".apk");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
                     pDialog = ProgressDialog.show(MainActivity.this, "",
-                        getString(R.string.loading), true);
+                            getString(R.string.loading), true);
                     pDialog.show();
+
+                    final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "n2c" + ".apk");
+
                     new Handler().postDelayed(new Runnable() {
 
                         @Override
                         public void run() {
-                            Downloader downlaoder = new Downloader(MainActivity.this, file, url);
+                            GitHubDownloader downlaoder = new GitHubDownloader(MainActivity.this, file, downloadURL1[0]);
                             downlaoder.run();
                             pDialog.dismiss();
                         }
                     }, 3000);
-
                 }
-            });
 
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.no), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    alertDialog.dismiss();
-                }
-            });
-            alertDialog.show();
-
-
-
-
-        }
-
-        public void downloadS2A(final String data) {
-                final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setMessage(getString(R.string.screen2auto_download));
-
-                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-
-
-                        alertDialog.dismiss();
-
-                        final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "s2a" + ".apk");
-
-                        pDialog = ProgressDialog.show(MainActivity.this, "",
-                            getString(R.string.loading), true);
-                        pDialog.show();
-                        new Handler().postDelayed(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                Downloader downlaoder = new Downloader(MainActivity.this, file, data);
-                                downlaoder.setScreen2auto(true);
-                                downlaoder.run();
-                                pDialog.dismiss();
-                            }
-                        }, 3000);
-
-                    }
-                });
-
-                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.no), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        alertDialog.dismiss();
-                    }
-                });
-                alertDialog.show();
-        }
-
-
-        void installAPK(File file) {
-
-            if (!verified[0]) {
-                registerDownload();
             }
-            dismissProgressDialog(pDialog);
+        }, new Response.ErrorListener() {
 
-            Intent intent;
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
-                intent.setData(getUri(file));
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
-            } else {
-                intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndTypeAndNormalize(Uri.fromFile(file), "application/vnd.android.package-archive");
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
             }
+        });
 
-            intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
-            intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, "com.android.vending");
-            getApplicationContext().startActivity(intent);
+
+        queue.add(jsonObjectRequest);
+
+
+    }
+
+    public void downloadAAP() {
+
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        alertDialog.setMessage(getString(R.string.about_to_download, "AAPassenger v1.9-alpha8"));
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+
+                alertDialog.dismiss();
+
+                final String url = BuildConfig.AAPASSENGER_LINK;
+                final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "aap" + ".apk");
+                pDialog = ProgressDialog.show(MainActivity.this, "",
+                        getString(R.string.loading), true);
+                pDialog.show();
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Downloader downlaoder = new Downloader(MainActivity.this, file, url);
+                        downlaoder.run();
+                        pDialog.dismiss();
+                    }
+                }, 3000);
+
+            }
+        });
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.no), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog.show();
+
+
+
+
+    }
+
+    public void downloadS2A(final String data) {
+        final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        alertDialog.setMessage(getString(R.string.screen2auto_download));
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+
+                alertDialog.dismiss();
+
+                final File file = new File(getApplicationContext().getExternalFilesDir("AAAD"), "s2a" + ".apk");
+
+                pDialog = ProgressDialog.show(MainActivity.this, "",
+                        getString(R.string.loading), true);
+                pDialog.show();
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Downloader downlaoder = new Downloader(MainActivity.this, file, data);
+                        downlaoder.setScreen2auto(true);
+                        downlaoder.run();
+                        pDialog.dismiss();
+                    }
+                }, 3000);
+
+            }
+        });
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.no), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog.show();
+    }
+
+
+    void installAPK(File file) {
+
+        if (true) {
+            registerDownload();
+        }
+        dismissProgressDialog(pDialog);
+
+        Intent intent;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+            intent.setData(getUri(file));
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+        } else {
+            intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndTypeAndNormalize(Uri.fromFile(file), "application/vnd.android.package-archive");
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
 
+        intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+        intent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, "com.android.vending");
+        getApplicationContext().startActivity(intent);
+    }
 
 
-        private void dismissProgressDialog(ProgressDialog pDialog) {
 
-            pDialog.dismiss();
+    private void dismissProgressDialog(ProgressDialog pDialog) {
+
+        pDialog.dismiss();
 
 
-        }
+    }
 
-        public Uri getUri(File file) {
-            return FileProvider.getUriForFile(
+    public Uri getUri(File file) {
+        return FileProvider.getUriForFile(
                 getApplicationContext(),
                 "sksa.aa.customapps.fileProvider",
                 file
-            );
-        }
+        );
+    }
 
-        public void registerDownload() {
-            try {
-                getTime();
-            } catch (IOException e) {
-                e.printStackTrace();
+    public void registerDownload() {
+        try {
+            getTime();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void setLongClickListener(Button button, final int resId) {
+        button.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View arg0) {
+                final Dialog dialog = new Dialog(MainActivity.this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setCanceledOnTouchOutside(true);
+                dialog.setCancelable(true);
+                View view = getLayoutInflater().inflate(R.layout.dialog_layout, null);
+
+
+                TextView tutorial = view.findViewById(R.id.dialog_content);
+                tutorial.setText(getString(resId));
+
+                dialog.setContentView(view);
+
+                dialog.show();
+
+                Window window = dialog.getWindow();
+                window.setLayout(ViewPager.LayoutParams.MATCH_PARENT, WRAP_CONTENT);
+
+                return true;
             }
+        });
+
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.version);
+        item.setTitle("V." + BuildConfig.VERSION_NAME);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            this.finishAffinity();
+            return;
         }
 
-        void setLongClickListener(Button button, final int resId) {
-            button.setOnLongClickListener(new View.OnLongClickListener() {
-                public boolean onLongClick(View arg0) {
-                    final Dialog dialog = new Dialog(MainActivity.this);
-                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                    dialog.setCanceledOnTouchOutside(true);
-                    dialog.setCancelable(true);
-                    View view = getLayoutInflater().inflate(R.layout.dialog_layout, null);
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, getString(R.string.press_back_warning), Toast.LENGTH_SHORT).show();
 
-
-                    TextView tutorial = view.findViewById(R.id.dialog_content);
-                    tutorial.setText(getString(resId));
-
-                    dialog.setContentView(view);
-
-                    dialog.show();
-
-                    Window window = dialog.getWindow();
-                    window.setLayout(ViewPager.LayoutParams.MATCH_PARENT, WRAP_CONTENT);
-
-                    return true;
-                }
-            });
-
-        }
-
-        @Override
-        public boolean onPrepareOptionsMenu(Menu menu) {
-            MenuItem item = menu.findItem(R.id.version);
-            item.setTitle("V." + BuildConfig.VERSION_NAME);
-            return super.onPrepareOptionsMenu(menu);
-        }
-
-
-        @Override
-        public void onBackPressed() {
-            if (doubleBackToExitPressedOnce) {
-                this.finishAffinity();
-                return;
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
             }
-
-            this.doubleBackToExitPressedOnce = true;
-            Toast.makeText(this, getString(R.string.press_back_warning), Toast.LENGTH_SHORT).show();
-
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    doubleBackToExitPressedOnce = false;
-                }
-            }, 2000);
-        }
+        }, 2000);
+    }
 
 
 
-        public void requestLatest() {
+    /*public void requestLatest() {
 
-            RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
+        RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
 
-            String BASE_URL = "https://api.github.com/repos/shmykelsa/AAAD/releases/latest";
+        String BASE_URL = "https://api.github.com/repos/shmykelsa/AAAD/releases/latest";
 
-            final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL, null, new Response.Listener < JSONObject > () {
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, BASE_URL, null, new Response.Listener < JSONObject > () {
 
-                private String fetchedVersion;
+            private String fetchedVersion;
 
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        fetchedVersion = response.getString("tag_name");
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    fetchedVersion = response.getString("tag_name");
 
-                    } catch (JSONException e) {
-                        newVersionName = null;
-                        e.printStackTrace();
-                    } finally {
-                        Version actualCheck = new Version(BuildConfig.VERSION_NAME);
-                        Version newCheck = new Version(fetchedVersion.substring(1));
+                } catch (JSONException e) {
+                    newVersionName = null;
+                    e.printStackTrace();
+                } finally {
+                    Version actualCheck = new Version(BuildConfig.VERSION_NAME);
+                    Version newCheck = new Version(fetchedVersion.substring(1));
 
-                        if (actualCheck.compareTo(newCheck) < 0) {
-                            newVersionName = fetchedVersion.substring(1);
+                    if (actualCheck.compareTo(newCheck) < 0) {
+                        newVersionName = fetchedVersion.substring(1);
 
-                            final BottomDialog builder2 = new BottomDialog.Builder(MainActivity.this)
+                        final BottomDialog builder2 = new BottomDialog.Builder(MainActivity.this)
                                 .setTitle(R.string.new_version_available)
                                 .setContent(getString(R.string.go_to_new_version, newVersionName))
                                 .setPositiveBackgroundColor(R.color.colorPrimary)
@@ -1307,37 +1303,37 @@ public class MainActivity extends AppCompatActivity {
                                 })
                                 .setBackgroundColor(R.color.centercolor).build();
 
-                            builder2.show();
+                        builder2.show();
 
-                        }
                     }
-
                 }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    newVersionName = null;
-                }
-            });
-            queue.add(jsonObjectRequest);
 
-        }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                newVersionName = null;
+            }
+        });
+        queue.add(jsonObjectRequest);
 
-        public void notMeetingSDK(int version) {
+    }*/
 
-            final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+    public void notMeetingSDK(int version) {
 
-            alertDialog.setMessage(getString(R.string.meeting_requirements, version));
+        final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
 
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    alertDialog.dismiss();
-                }
-            });
+        alertDialog.setMessage(getString(R.string.meeting_requirements, version));
 
-            alertDialog.show();
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                alertDialog.dismiss();
+            }
+        });
 
+        alertDialog.show();
 
-        }
 
     }
+
+}

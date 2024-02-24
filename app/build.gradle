@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 android {
     def localProperties = new Properties()
@@ -11,15 +10,20 @@ android {
         buildConfig = true
     }
 
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+
+    compileSdk 32
 
     namespace "sksa.aa.customapps"
 
     defaultConfig {
-
         localProperties.load(new FileInputStream(rootProject.file("local.properties")))
-
         applicationId "sksa.aa.customapps"
         minSdkVersion 23
         targetSdkVersion 30

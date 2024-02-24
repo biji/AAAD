@@ -11,6 +11,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import sksa.aa.customapps.R;
+
 
 public class ContactDialog extends DialogFragment {
 
@@ -27,7 +29,7 @@ public class ContactDialog extends DialogFragment {
                 intent.setData(Uri.parse("mailto:")); // only email apps should handle this
                 intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "help.aaad@gmail.com" });
                 intent.putExtra(Intent.EXTRA_SUBJECT, "HELP");
-                    startActivity(intent);
+                startActivity(intent);
 
             }
         });

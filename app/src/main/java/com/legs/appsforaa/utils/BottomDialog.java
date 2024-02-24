@@ -25,7 +25,6 @@ import androidx.annotation.UiThread;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
-import com.legs.appsforaa.R;
 
 public class BottomDialog {
     private static final int DEFAULT_SHADOW_HEIGHT = 3;
@@ -100,8 +99,8 @@ public class BottomDialog {
         final Dialog bottomDialog = new Dialog(builder.context, com.github.javiersantos.bottomdialogs.R.style.BottomDialogs);
         View view = LayoutInflater.from(builder.context).inflate(com.github.javiersantos.bottomdialogs.R.layout.library_bottom_dialog, null);
 
-        View container = view.findViewById(com.github.javiersantos.bottomdialogs.R.id.bottomDialog_container);
-        View shadow = view.findViewById(com.github.javiersantos.bottomdialogs.R.id.bottomDialog_shadow);
+        //View container = view.findViewById(com.github.javiersantos.bottomdialogs.R.id.bottomDialog_container);
+        //View shadow = view.findViewById(com.github.javiersantos.bottomdialogs.R.id.bottomDialog_shadow);
 
         vIcon = view.findViewById(com.github.javiersantos.bottomdialogs.R.id.bottomDialog_icon);
         vTitle = view.findViewById(com.github.javiersantos.bottomdialogs.R.id.bottomDialog_title);
@@ -111,14 +110,14 @@ public class BottomDialog {
         vPositive = view.findViewById(com.github.javiersantos.bottomdialogs.R.id.bottomDialog_ok);
 
         // Apply style changes
-        container.setBackgroundColor(builder.backgroundColor);
+        /*container.setBackgroundColor(builder.backgroundColor);
         if (builder.shadowHeight != DEFAULT_SHADOW_HEIGHT) {
             LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)
                     shadow.getLayoutParams();
             params.height = UtilsLibrary.dpToPixels(builder.context,
                     builder.shadowHeight);
             shadow.setLayoutParams(params);
-        }
+        }*/
 
         if (builder.icon != null) {
             vIcon.setVisibility(View.VISIBLE);
@@ -127,16 +126,16 @@ public class BottomDialog {
 
         if (builder.title != null) {
             vTitle.setText(builder.title);
-            vTitle.setTextColor(builder.context.getResources().getColor(R.color.dialog_text_color, builder.context.getTheme()));
-            vTitle.setTextAppearance(R.style.TitleBarTextAppearance);
+            //vTitle.setTextColor(builder.context.getResources().getColor(R.color.dialog_text_color, builder.context.getTheme()));
+            // vTitle.setTextAppearance(R.style.TitleBarTextAppearance);
         } else {
             vTitle.setVisibility(View.GONE);
         }
 
         if (builder.content != null) {
             vContent.setText(builder.content);
-            vContent.setTextColor(builder.context.getResources().getColor(R.color.dialog_text_color, builder.context.getTheme()));
-            vContent.setTextAppearance(R.style.NormalTextAppeareance);
+            // vContent.setTextColor(builder.context.getResources().getColor(R.color.dialog_text_color, builder.context.getTheme()));
+            //vContent.setTextAppearance(R.style.NormalTextAppeareance);
         } else {
             vContent.setVisibility(View.GONE);
         }

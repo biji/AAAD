@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import sksa.aa.customapps.R;
+
 
 public class AboutDialog extends DialogFragment {
 
