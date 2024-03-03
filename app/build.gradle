@@ -47,9 +47,21 @@ android {
 
     }
 
+    signingConfigs {
+        release {
+            storePassword '123456'
+            keyPassword '123456'
+            keyAlias = 'testkey'
+            storeFile file('testkeystore.jks')
+        }
+    }
     buildTypes {
         release {
+            matchingFallbacks = ['release']
+            debuggable false
             minifyEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
         }
     }
