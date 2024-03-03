@@ -39,7 +39,7 @@
                     android:label="@string/title_activity_about_payment" />-->
 
         <activity android:name="com.legs.appsforaa.MainActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
