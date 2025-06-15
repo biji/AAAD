@@ -1,0 +1,20 @@
+## This file must *NOT* be checked into Version Control Systems,
+# as it contains information specific to your local configuration.
+#
+# Location of the SDK. This is only used by Gradle.
+# For customization when using a Version Control System, please read the
+# header note.
+#Sat Jun 14 18:14:48 WIB 2025
+PAYPAL_ID_PROMO="placeholder"
+PAYPAL_ID="placeholder"
+RETURN_URL="placeholder"
+sdk.dir=/home/yoursdkhome/bin/android-sdk-linux_86
+FIREBASE_INSTANCE="placeholder"
+CARSTREAM202_LINK="https://firebasestorage.googleapis.com/v0/b/appsforaa-1b443.appspot.com/o/CarStream%2F2.0.2?alt=media&token=0bf0741f-e92f-4b15-9aff-af1429486ef0"
+CARSTREAM204_LINK="https://firebasestorage.googleapis.com/v0/b/appsforaa-1b443.appspot.com/o/CarStream%2F2.0.4?alt=media&token=84a509d2-21c9-4039-ac0a-76f394efd960"
+CARSTREAM205_LINK="https://firebasestorage.googleapis.com/v0/b/appsforaa-1b443.appspot.com/o/CarStream%2F2.0.5?alt=media&token=11545549-78bc-4cf0-bc0b-91e3b5a35bbd"
+AAMP_LINK="https://firebasestorage.googleapis.com/v0/b/appsforaa-1b443.appspot.com/o/AAMirrorPlus%2FAAMirror%20Plus%201.01a.apk?alt=media&token=0d6b0198-e74c-4532-900d-04086f0201ea"
+AAWIDGETS_LINK="https://firebasestorage.googleapis.com/v0/b/appsforaa-1b443.appspot.com/o/WidgetsForAA%2Fwidgets4auto-0.2.0.apk?alt=media&token=8f59ce77-9265-40c6-895c-56c6948a2464"
+AAPASSENGER_LINK="https://firebasestorage.googleapis.com/v0/b/appsforaa-1b443.appspot.com/o/AAPassenger%2Faa2ndseat-1.9-alpha8.apk?alt=media&token=c394139c-0833-45cf-984f-8faedfd103f5"
+AAMIRROR_LINK="https://firebasestorage.googleapis.com/v0/b/appsforaa-1b443.appspot.com/o/mirror-debug.apk?alt=media&token=d1b2ae72-0c85-4d01-965c-033a27a7c9dc"
+AASTREAM_LINK="https://firebasestorage.googleapis.com/v0/b/appsforaa-1b443.appspot.com/o/AAStream%2Faa-stream-v1.1.0.29-release.apk?alt=media&token=e80107f9-4b8f-4625-8a50-1f5236ff"
