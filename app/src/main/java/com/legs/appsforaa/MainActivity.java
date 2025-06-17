@@ -282,8 +282,10 @@ public class MainActivity extends AppCompatActivity {
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                         PackageManager.PERMISSION_GRANTED) {
                     askForStoragePermission();
+                    } else {
+                        downloadAAP();
+                    }
                 }
-            }
         });
 
         Button s2a = findViewById(R.id.download_screentwoauto); setLongClickListener(s2a, R.string.s2a_description); s2a.setOnClickListener(new View.OnClickListener() {
@@ -293,7 +295,24 @@ public class MainActivity extends AppCompatActivity {
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                         PackageManager.PERMISSION_GRANTED) {
                     askForStoragePermission();
-                }
+                    } else {
+                        final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                        alertDialog.setMessage(getString(R.string.s2a_redirect));
+
+                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://inceptive.ru/blog/20/screen2auto-dublirovanie-ekrana-smartfona-v-android-auto-na-gu")));
+
+                            }
+                        });
+
+                        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(android.R.string.no), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                alertDialog.dismiss();
+                            }
+                        });
+                        alertDialog.show();
+                    }
             }
         });
 
