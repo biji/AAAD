@@ -54,7 +54,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https"
                     android:host="inceptive.ru"
-                    android:pathPrefix="/projects/aaease/download/" />
+                    android:pathPrefix="/projects/s2a/download/" />                    
             </intent-filter>
 
         </activity>
